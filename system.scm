@@ -57,34 +57,48 @@
                                                  (network-manager-configuration (inherit config)
                                                                                 (vpn-plugins (list network-manager-openvpn))))))
 
-(define %xorg-libinput-config
-  "Section \"InputClass\"
-  Identifier \"Touchpads\"
-  Driver \"libinput\"
-  MatchDevicePath \"/dev/input/event*\"
-  MatchIsTouchpad \"on\"
+(define %xorg-config
+    "Section \"Device\"
+        Identifier     \"Device0\"
+        Driver         \"nvidia\"
+        VendorName     \"NVIDIA Corporation\"
+        BoardName      \"GeForce GTX 1050 Ti\"
+    EndSection
 
-  Option \"Tapping\" \"on\"
-  Option \"TappingDrag\" \"on\"
-  Option \"DisableWhileTyping\" \"on\"
-  Option \"MiddleEmulation\" \"on\"
-  Option \"ScrollMethod\" \"twofinger\"
-EndSection
-Section \"InputClass\"
-  Identifier \"Keyboards\"
-  Driver \"libinput\"
-  MatchDevicePath \"/dev/input/event*\"
-  MatchIsKeyboard \"on\"
-EndSection
+    Section \"ServerFlags\"
+        Option \"IgnoreABI\" \"1\"
+    EndSection
+
+    Section \"Device\"
+        Identifier  \"intel\"
+        Driver      \"modesetting\"
+    EndSection
+
+    Section \"Screen\"
+        Identifier \"intel\"
+        Device \"intel\"
+    EndSection
+
+    Section \"InputClass\"
+        Identifier \"Touchpads\"
+        Driver \"libinput\"
+        MatchDevicePath \"/dev/input/event*\"
+        MatchIsTouchpad \"on\"
+
+        Option \"Tapping\" \"on\"
+        Option \"TappingDrag\" \"on\"
+        Option \"DisableWhileTyping\" \"on\"
+        Option \"MiddleEmulation\" \"on\"
+        Option \"ScrollMethod\" \"twofinger\"
+    EndSection
+
+    Section \"InputClass\"
+        Identifier \"Keyboards\"
+        Driver \"libinput\"
+        MatchDevicePath \"/dev/input/event*\"
+        MatchIsKeyboard \"on\"
+    EndSection
 ")
-
-(define %xorg-gpu-config
-  "Section \"Device\"
-      Identifier     \"Device0\"
-      Driver         \"nvidia\"
-      VendorName     \"NVIDIA Corporation\"
-      BoardName      \"GeForce GTX 1050 Ti\"
-  EndSection")
 
 (operating-system
   (kernel linux-lts)
