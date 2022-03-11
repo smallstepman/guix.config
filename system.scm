@@ -160,9 +160,8 @@ EndSection
               (libvirt-configuration
                 (unix-sock-group "libvirt")
                 (tls-port "16555")))
-            (bluetooth-service #:auto-enable? #t)
-            %my-desktop-services
-      )))
+           (bluetooth-service #:auto-enable? #t))
+      %my-desktop-services))
   (bootloader
     (bootloader-configuration
       (bootloader grub-efi-bootloader)
