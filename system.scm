@@ -41,7 +41,7 @@
 
 (define %my-desktop-services
   (modify-services %desktop-services
-                   ;; (delete gdm-service-type)
+                   (delete gdm-service-type)
                    (elogind-service-type config =>
                                          (elogind-configuration (inherit config)
                                                                 (handle-lid-switch-external-power 'suspend)))
@@ -127,10 +127,9 @@ EndSection
             (specification->package "nss-certs"))
       %base-packages))
   (services
-    ;; (cons*
-      (append ;;
-       (list
-            (service gnome-desktop-service-type)
+    (append
+      (list
+       ;;(service gnome-desktop-service-type)
             (simple-service
               'custom-udev-rules udev-service-type
               (list nvidia-driver))
@@ -141,20 +140,19 @@ EndSection
                ; "nvidia-drm"
                "nvidia_uvm"))
             (service openssh-service-type)
-            ;; %my-desktop-services
             (service docker-service-type)
             (service tor-service-type)
             (service cups-service-type)
-            ;; (service slim-service-type
-            ;;     (slim-configuration
-            ;;       (display ":0")
-            ;;       (vt "vt7")
-            ;;       (xorg-configuration (xorg-configuration
-            ;;         (keyboard-layout keyboard-layout)
-            ;;         (modules (cons* nvidia-driver %default-xorg-modules))
-            ;;         (server (transform xorg-server))
-            ;;         (drivers '("nvidia"))
-            ;;         (extra-config (list %xorg-libinput-config ))))))
+            (service slim-service-type
+                (slim-configuration
+                  (display ":1")
+                  (vt "vt7")
+                  (xorg-configuration (xorg-configuration
+                    (keyboard-layout keyboard-layout)
+                    (modules (cons* nvidia-driver %default-xorg-modules))
+                    (server (transform xorg-server))
+                    (drivers '("nvidia" "modesetting"))
+                    (extra-config (list %xorg-config ))))))
             (service nix-service-type)
             (service libvirt-service-type
               (libvirt-configuration
