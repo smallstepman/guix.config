@@ -5,10 +5,9 @@
   (gnu)
   (nongnu packages linux)
   (nongnu packages nvidia)
+  (gnu packages xorg)
   (nongnu system linux-initrd)
   (guix transformations)
-  (gnu services xorg)
-  (gnu packages xorg)
   (gnu packages gnome)
   (gnu packages haskell-apps)
   (gnu packages shells))
@@ -22,7 +21,7 @@
   nix
   ssh
   virtualization
-  )
+  xorg)
 
 (use-package-modules package-management)
 
