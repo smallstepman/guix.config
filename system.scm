@@ -63,22 +63,6 @@
         Option \"IgnoreABI\" \"1\"
     EndSection
 
-    Section \"Device\"
-        Identifier  \"intel\"
-        Driver      \"modesetting\"
-    EndSection
-
-    Section \"Screen\"
-        Identifier \"intel\"
-        Device \"intel\"
-    EndSection
-
-    Section \"Device\"
-        Identifier     \"Nvidia Card\"
-        Driver         \"nvidia\"
-        VendorName     \"NVIDIA Corporation\"
-        BoardName      \"GeForce GTX 1050 Ti\"
-    EndSection
 
     Section \"InputClass\"
         Identifier \"Touchpads\"
@@ -167,7 +151,7 @@
                     (modules (cons* nvidia-driver %default-xorg-modules))
                     (server (transform xorg-server))
                     (drivers '("nvidia" "modesetting"))
-                   ;; (extra-config (list %xorg-config ))
+                   (extra-config (list %xorg-config ))
                     ))))
             (service nix-service-type)
             (service libvirt-service-type
