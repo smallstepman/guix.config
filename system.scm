@@ -58,13 +58,7 @@
                                                                                 (vpn-plugins (list network-manager-openvpn))))))
 
 (define %xorg-config
-    "Section \"Device\"
-        Identifier     \"Device0\"
-        Driver         \"nvidia\"
-        VendorName     \"NVIDIA Corporation\"
-        BoardName      \"GeForce GTX 1050 Ti\"
-    EndSection
-
+    "
     Section \"ServerFlags\"
         Option \"IgnoreABI\" \"1\"
     EndSection
@@ -77,6 +71,13 @@
     Section \"Screen\"
         Identifier \"intel\"
         Device \"intel\"
+    EndSection
+
+    Section \"Device\"
+        Identifier     \"Nvidia Card\"
+        Driver         \"nvidia\"
+        VendorName     \"NVIDIA Corporation\"
+        BoardName      \"GeForce GTX 1050 Ti\"
     EndSection
 
     Section \"InputClass\"
@@ -166,7 +167,8 @@
                     (modules (cons* nvidia-driver %default-xorg-modules))
                     (server (transform xorg-server))
                     (drivers '("nvidia" "modesetting"))
-                    (extra-config (list %xorg-config ))))))
+                   ;; (extra-config (list %xorg-config ))
+                    ))))
             (service nix-service-type)
             (service libvirt-service-type
               (libvirt-configuration
