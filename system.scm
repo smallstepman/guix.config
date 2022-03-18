@@ -21,6 +21,7 @@
   docker
   linux
   networking
+  security-token ; pcscd
   nix
   ssh
   virtualization
@@ -67,6 +68,13 @@
 (define %my-desktop-services
   (modify-services %desktop-services
                    (delete gdm-service-type)
+                   ;; Set the default sample rate for the pulseaudio daemon to be
+                   ;; 48000; needed for the Valve Index mic, see
+                   ;; https://github.com/ValveSoftware/SteamVR-for-Linux/issues/215#issuecomment-526791835
+                   (pulseaudio-service-type config =>
+                                            (pulseaudio-configuration
+                                            (daemon-conf '((default-sample-rate . 48000)))))
+
                    (elogind-service-type config =>
                                          (elogind-configuration (inherit config)
                                                                 (handle-lid-switch-external-power 'suspend)))
@@ -148,6 +156,7 @@
             (specification->package "nix")
             (specification->package "st")
             (specification->package "emacs")
+            (specification->package "steam-nvidia")
             (specification->package "emacs-guix")
             (specification->package "emacs-exwm")
             (specification->package
@@ -158,6 +167,15 @@
     (append
       (list
        ;;(service gnome-desktop-service-type)
+            (pam-limits-service
+                (list
+                    ;; higher open file limit, helpful for Wine and esync
+                    (pam-limits-entry "*" 'both 'nofile 524288)
+                    ;; lower nice limit for users, but root can go further to rescue system
+                    (pam-limits-entry "*" 'both 'nice -19)
+                    (pam-limits-entry "root" 'both 'nice -20)))
+            (service pcscd-service-type)
+            (udev-rules-service 'steam-input %steam-input-udev-rules)
             (simple-service
               'custom-udev-rules udev-service-type
               (list nvidia-driver))
