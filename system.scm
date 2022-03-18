@@ -9,6 +9,9 @@
   (nongnu system linux-initrd)
   (guix transformations)
   (gnu packages gnome)
+  (guix packages)
+  (guix download)
+  (gnu services sound)
   (gnu packages haskell-apps)
   (gnu packages shells))
 
@@ -28,6 +31,28 @@
 (define transform
   (options->transformation
    '((with-graft . "mesa=nvda"))))
+(define transform1
+  (options->transformation
+    '((with-source
+        .
+        "xdg-desktop-portal-gtk=https://github.com/flatpak/xdg-desktop-portal-gtk/releases/download/1.8.0/xdg-desktop-portal-gtk-1.8.0.tar.xz"))))
+(define transform5
+  (options->transformation
+    '((with-source
+        .
+        "https://github.com/flatpak/flatpak/releases/download/1.11.2/flatpak-1.11.2.tar.xz"))))
+
+;; TODO make these git version
+(define %steam-input-udev-rules
+  (file->udev-rule
+    "60-steam-input.rules"
+    (let ((version "8a3f1a0e2d208b670aafd5d65e216c71f75f1684"))
+      (origin
+       (method url-fetch)
+       (uri (string-append "https://raw.githubusercontent.com/ValveSoftware/"
+                           "steam-devices/" version "/60-steam-input.rules"))
+       (sha256
+        (base32 "1k6sa9y6qb9vh7qsgvpgfza55ilcsvhvmli60yfz0mlks8skcd1f"))))))
 
 ;; Allow members of the "video" group to change the screen brightness.
 (define %backlight-udev-rule
@@ -110,6 +135,10 @@
   (packages
     (append
       (list (specification->package "i3-wm")
+             (transform1
+          (specification->package "xdg-desktop-portal-gtk"))
+                     (transform5 (specification->package "flatpak"))
+
             (specification->package "i3status")
             (specification->package "dmenu")
             (specification->package "git")
