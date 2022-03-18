@@ -68,6 +68,11 @@
 (define %my-desktop-services
   (modify-services %desktop-services
                    (delete gdm-service-type)
+                   (delete modem-manager-service-type)
+                   (delete usb-modeswitch-service-type)
+                   (delete sane-service-type)
+                   ;; not sure how to
+                   ;(delete (specification->package "network-manager-applet"))
                    ;; Set the default sample rate for the pulseaudio daemon to be
                    ;; 48000; needed for the Valve Index mic, see
                    ;; https://github.com/ValveSoftware/SteamVR-for-Linux/issues/215#issuecomment-526791835
