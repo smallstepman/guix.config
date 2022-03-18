@@ -92,10 +92,26 @@
 
 (define %xorg-config
     "
+    Section \"Device\"
+        Identifier     \"Nvidia Card\"
+        Driver         \"nvidia\"
+        VendorName     \"NVIDIA Corporation\"
+        BoardName      \"GeForce GTX 1050 Ti\"
+    EndSection
+
     Section \"ServerFlags\"
         Option \"IgnoreABI\" \"1\"
     EndSection
 
+    Section \"Device\"
+        Identifier  \"intel\"
+        Driver      \"i915\"
+    EndSection
+
+    Section \"Screen\"
+        Identifier \"intel\"
+        Device \"intel\"
+    EndSection
 
     Section \"InputClass\"
         Identifier \"Touchpads\"
@@ -119,9 +135,9 @@
 ")
 
 (operating-system
-  (kernel linux-lts)
+  (kernel linux)
   (initrd microcode-initrd)
-  (firmware (list linux-firmware))
+  (firmware (list linux-firmware i915-firmware))
   (kernel-arguments
    (append '("modprobe.blacklist=nouveau")
            %default-kernel-arguments))
@@ -183,8 +199,9 @@
              '("ipmi_devintf"
                "nvidia"
                "nvidia_modeset"
-               ; "nvidia-drm"
-               "nvidia_uvm"))
+               "nvidia-drm"
+               "nvidia_uvm"
+               "i915"))
             (service openssh-service-type)
             (service docker-service-type)
             (service tor-service-type)
@@ -198,8 +215,7 @@
                     (modules (cons* nvidia-driver %default-xorg-modules))
                     (server (transform xorg-server))
                     (drivers '("nvidia" "modesetting"))
-                   (extra-config (list %xorg-config ))
-                    ))))
+                    (extra-config (list %xorg-config ))))))
             (service nix-service-type)
             (service libvirt-service-type
               (libvirt-configuration
