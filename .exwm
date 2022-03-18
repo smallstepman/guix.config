@@ -1,0 +1,131 @@
+;; (use-package! exwm
+ ;;  ;; When window "class" updates, use it to set the buffer name
+ ;; :hook ((exwm-update-title . exwm-rename-buffer-to-class+title))
+ ;; (add-hook! 'exwm-manage-finish-hook (lambda () (call-interactively #'exwm-input-release-keyboard)))
+ ;;  (add-hook 'exwm-update-class-hook #'efs/exwm-update-class)
+ ;; :config
+ (defun exwm-rename-buffer-to-class+title ()
+   "Update exwm buffenr name with the X class name and the actual X window name"
+   (let ((title (concat exwm-class-name " - " exwm-title)))
+     (exwm-workspace-rename-buffer
+      (if (< (length title) 43)
+          title
+        (concat (substring title 0 43) "...")))))
+
+
+ ;; (start-process-shell-command "xrandr" nil "xrandr --output DP-1.1 --primary --mode 3840x2160 --pos 0x0 --rotate normal --output DP-0 --off --output DP-1 --off --output HDMI-0 --mode 2200x1650 --pos 3840x1335 --rotate left --output eDP-1-1 --mode 3840x2160 --pos 0x2160 --rotate normal")
+ ;;(setq exwm-randr-workspace-monitor-plist '(1 "HDMI-0" 2 "DP-0"))
+ ;;  (add-hook! 'exwm-randr-screen-change-hook
+ ;;    (lambda ()
+ ;;      (start-process-shell-command
+ ;;       "xrandr" nil "xrandr --output DP-1.1 --right-of DP-0 --auto")))
+ ;;  (exwm-randr-enable)
+ ;; (start-file-process-shell-command "xmodmap" nil "xmodmap" "~/.Xmodmap")
+ ;; (start-process-shell-command "feh" nil "feh --bg-scale /home/marcin/.config/wall.png")
+ ;; (start-process-shell-command "bgchd" nil "bgchd -dir /home/marcin/Pictures/wallpapers/ -intv 5m -bcknd feh")
+ ;; (start-process-shell-command "dockd" nil "dockd --daemon")
+ ;; (start-process-shell-command "jupyter" nil "jupyter notebook --NotebookApp.token= --no-browser --port 9999")
+ ;; (start-process-shell-command "powertop" nil "sudo powertop --auto-tune")
+ ;; (start-process-shell-command "keylogger" nil "/bin/llk")
+ ;; (start-process-shell-command "polybar" nil "polybar mybar")
+ (setq exwm-workspace-number 6)
+ (setq exwm-workspace-show-all-buffers t)
+ (setq exwm-layout-show-all-buffers t)
+ ;;(setq exwm-input-line-mode-passthrough t)
+ ;; ;; Ensure that when char mode is left, state is restored to normal
+ ;; (advice-add 'exwm-input-grab-keyboard :after (lambda (&optional id)
+ ;;                                                 (evil-normal-state)))
+ ;; ;; Ensure that when char mode is entered, input state is activated
+ ;; (advice-add 'exwm-input-release-keyboard :after (lambda (&optional id)
+ ;;                                                   (evil-insert-state)))
+ ;; ;; In normal state/line mode, use the familiar i key to switch to input state
+ ;; (evil-define-key 'normal exwm-mode-map (kbd "i") 'exwm-input-release-keyboard)
+ ;; (push ?\i exwm-input-prefix-keys)
+
+ ;; (exwm-input-set-key (kbd doom-leader-alt-key) doom-leader-map)
+ ;; ;; These keys should always pass through to Emacs
+ (setq exwm-input-prefix-keys
+       '(?\C-x
+         ?\C-u
+         ?\C-h
+         ?\M-x
+         ?\M-`
+         ?\M-&
+         ?\M-:
+         ?\C-\M-j  ;; Buffer list
+         ?\C-\
+         ?\M-\ ))  ;; Ctrl+Space
+
+ ;; Ctrl+Q will enable the next key to be sent directly
+ ;; (define-key exwm-mode-map [?\C-q] 'exwm-input-send-next-key)
+
+ (setq exwm-input-global-keys
+       `(
+         ;;; system
+         ;; ([XF86MonBrightnessUp] . (lambda () (interactive) (start-process-shell-command "light" nil "light -A 1")))
+         ;; ([XF86MonBrightnessDown] . (lambda () (interactive) (start-process-shell-command "light" nil "light -U 1")))
+         ;; ([XF86AudioRaiseVolume] . (lambda () (interactive) (start-process-shell-command "pactl" nil "pactl set-sink-volume @DEFAULT_SINK@ +10%")))
+         ;; ([XF86AudioLowerVolume] . (lambda () (interactive) (start-process-shell-command "pactl" nil "pactl set-sink-volume @DEFAULT_SINK@ -10%")))
+         ;; ([XF86AudioMute] . (lambda () (interactive) (start-process-shell-command "pactl" nil "pactl set-sink-mute @DEFAULT_SINK@ toggle")))
+         ;; ([XF86AudioMicMute] . (lambda () (interactive) (start-process-shell-command "pactl" nil "pactl set-source-mute @DEFAULT_SOURCE@ toggle")))
+
+         ;;          ([?\s-=]  . exwm-outer-gaps-mode)
+         ;;          ([?\s-+]  . exwm-outer-gaps-increment)
+         ;;          ([?\s-\-]  . exwm-outer-gaps-decrement)
+         ;;          ([?\s--]  . exwm-outer-gaps-decrement)
+         ;; hydras
+         ([XF86Launch7] . +hydra/window-nav/body)
+         ;; workspace
+         ([?\s-w] . exwm-workspace-switch)
+         ,@(mapcar (lambda (i)
+                     `(,(kbd (format "s-%d" i)) .
+                       (lambda ()
+                         (interactive)
+                         (exwm-workspace-switch-create ,i))))
+                   (number-sequence 0 9))
+         ;;  ([XF86Launch6] . +workspace/switch-left)
+         ;;  ([XF86Launch7] . +workspace/switch-right)
+         ;; desktop
+         ([?\s-q] . kill-this-buffer)
+         ([C-b] . switch-to-buffer)
+         ([?\C-b] . switch-to-buffer)
+         ([?\s- ] . switch-to-buffer)
+         ;; layout
+         ([?\s-n] . windmove-left)
+         ([?\s-e] . windmove-down)
+         ([?\s-i] . windmove-up)
+         ([?\s-o] . windmove-right)
+         ([s-n] . windmove-left)
+         ([s-e] . windmove-down)
+         ([s-i] . windmove-up)
+         ([s-o] . windmove-right)
+         ;; fullscreen / float
+         ([?\s-f] . exwm-layout-toggle-fullscreen)
+         ([?\M-f] . exwm-layout-toggle-fullscreen)
+         ;; focus
+         ([XF86TouchpadToggle] . avy-goto-char-timer)
+         ([s-XF86TouchpadOff] . avy-goto-char-timer)
+         ([XF86TouchpadOn] . avy-goto-line)
+         ([C-XF86TouchpadOff] . avy-goto-line)
+         ;;    ([f23] . switch-window)
+         ;; scroll
+         ([M-XF86Launch5] . scroll-other-window)
+         ([M-XF86Tools] . scroll-other-window-down)
+         ;; apps
+         ([XF86Tools] . org-capture)
+         ([f6] . org-capture)
+         ([s-tab] . +vterm/toggle)
+         ([s-return] . switch-to-buffer)
+         ([?\s-b] . (lambda () (interactive) (evil-window-vnew nil nil) (start-process-shell-command "qutebrowser" nil "qutebrowser")))
+         ([?\s-c] . (lambda () (interactive)  (evil-window-vnew nil nil) (start-process-shell-command "chromium" nil "chromium")))
+         ([?\s-m] . (lambda () (interactive) (evil-window-vnew nil nil) (start-process-shell-command "spotify" nil "spotify")))
+         ([?\s-v] . (lambda () (interactive) (evil-window-vnew nil nil) (start-process-shell-command "nvim" nil "alacritty -e nvim")))
+         ([?\s-x] . (lambda () (interactive) (evil-window-vnew nil nil) (dired "~")))
+         ([?\s-X] . (lambda () (interactive) (evil-window-vnew nil nil) (start-process-shell-command "dolphin" nil "dolphin")))
+         ([?\s-&] . (lambda (command)
+                      (interactive (list (read-shell-command "$ ")))
+                      (start-process-shell-command command nil command)))
+         ))
+ ;; (server-start)
+ ;; (exwm-enable)
+ ;; )
